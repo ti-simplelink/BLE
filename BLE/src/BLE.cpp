@@ -367,6 +367,11 @@ int BLE::setAdvertName(uint8_t advertNameLen, const char advertName[])
   uint8_t *srcAfterStr = defScanRspData + 1 + defScanRspData[0];
   uint8_t afterStrLen = sizeof(defScanRspData) - 1 - defScanRspData[0];
   memcpy(destAfterStr, srcAfterStr, afterStrLen);
+
+
+  /* Set Device Name, this improves user experience with iOS devices */
+  SAP_setServiceParam(SNP_GGS_SERV_ID, SNP_GGS_DEVICE_NAME_ATT,
+                         advertNameLen, (uint8_t *)advertName);
   logRPC("Set adv name");
   logParam(advertName);
   logRelease();
@@ -889,12 +894,34 @@ int BLE::testCommand(BLE_Test_Command_Rsp *testRsp)
   return BLE_SUCCESS;
 }
 
+
 int BLE::serial(void)
 {
   if (isError(addService(&serialService)))
   {
     return BLE_CHECK_ERROR;
   }
+  uint8_t advertData[] = {
+    0x02,                 // Length of field
+    0x01,                 //GAP_ADTYPE_FLAGS
+    0x06,                 //GAP_ADTYPE_FLAGS_GENERAL | GAP_ADTYPE_FLAGS_BREDR_NOT_SUPPORTED,
+    0x11,                 // length of this data
+    0x06,                 // GAP_ADTYPE_128BIT_MORE
+    0x00,0x00,0x00,0x00,  // Serial SVC UUID placeholder (128 bit UUID)
+    0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00
+  };
+
+  // Copy the UUID into advert data
+  memcpy(&advertData[5], &(serialService.UUID), serialService._UUIDlen);
+  // Set advert data, we are setting this so we advertise the UART service
+  // This is done for compatibility with the Adafruit Bluefruit app
+  if (isError(setAdvertData(SAP_ADV_DATA_NOTCONN, sizeof(advertData), advertData)))
+  {
+    return BLE_CHECK_ERROR;
+  }
+
   rxChar._isBigEnd = true;
   txChar._isBigEnd = true;
   return BLE_SUCCESS;

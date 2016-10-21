@@ -26,6 +26,8 @@ BLE_Char txChar =
 
 BLE_Char *serialServiceChars[] = {&rxChar, &txChar};
 
+
+//6e400001-b5a3-f393-e0a9-e50e24dcca9e
 BLE_Service serialService =
 {
   {0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0,
