@@ -68,6 +68,12 @@
 #define BLE_WRITABLE                   SNP_GATT_PROP_WRITE
 #define BLE_NOTIFIABLE                 SNP_GATT_PROP_NOTIFICATION
 #define BLE_INDICATABLE                SNP_GATT_PROP_INDICATION
+/* Note that the below defines depend SNP_GATT_* bitfields not changing */
+#define BLE_AUTHEN                     0x40
+#define BLE_ENCRYPT                    0x80
+
+/* Upper two bits are reserved to set Authen and Encrypt */
+#define BLE_PROPERTIES_MASK            0x3F
 
 /*
  * Serial Buffer Length

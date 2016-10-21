@@ -22,6 +22,7 @@ static BLE_Char* getCCCD(uint16_t handle);
 static BLE_Service* getServiceWithChar(uint16_t handle);
 static void constructService(SAP_Service_t *service, BLE_Service *bleService);
 static void constructChar(SAP_Char_t *sapChar, BLE_Char *bleChar);
+static uint8_t setPermissions(uint8_t props);
 static uint8_t getUUIDLen(const uint8_t UUID[]);
 static uint8_t serviceReadAttrCB(void *context,
                                  uint16_t connectionHandle,
@@ -185,6 +186,34 @@ static void constructService(SAP_Service_t *service, BLE_Service *bleService)
   }
 }
 
+static uint8_t setPermissions(uint8_t props)
+{
+
+  uint8_t permissions = 0;
+  if(props & BLE_ENCRYPT)
+  {
+    permissions =   ((props & BLE_READABLE)
+                        ? SNP_GATT_PERMIT_ENCRYPT_READ : 0)
+                    | ((props & (BLE_WRITABLE_NORSP | BLE_WRITABLE))
+                        ? SNP_GATT_PERMIT_ENCRYPT_WRITE : 0);
+  }
+  else if(props & BLE_AUTHEN)
+  {
+    permissions =   ((props & BLE_READABLE)
+                        ? SNP_GATT_PERMIT_AUTHEN_READ : 0)
+                    | ((props & (BLE_WRITABLE_NORSP | BLE_WRITABLE))
+                        ? SNP_GATT_PERMIT_AUTHEN_WRITE : 0);
+  }
+  else
+  {
+    permissions =   ((props & BLE_READABLE)
+                        ? SNP_GATT_PERMIT_READ : 0)
+                    | ((props & (BLE_WRITABLE_NORSP | BLE_WRITABLE))
+                        ? SNP_GATT_PERMIT_WRITE : 0);
+  }
+  return permissions;
+}
+
 static void constructChar(SAP_Char_t *sapChar, BLE_Char *bleChar)
 {
   /* TODO remove this. Bug in BLE stack makes this fail otherwise. */
@@ -204,11 +233,9 @@ static void constructChar(SAP_Char_t *sapChar, BLE_Char *bleChar)
   sapChar->UUID.len    = bleChar->_UUIDlen;
   sapChar->UUID.pUUID  = bleChar->UUID;
 
-  sapChar->properties  = bleChar->properties;
-  sapChar->permissions = ((sapChar->properties & BLE_READABLE)
-                            ? SNP_GATT_PERMIT_READ : 0)
-                       | ((sapChar->properties & (BLE_WRITABLE_NORSP | BLE_WRITABLE))
-                            ? SNP_GATT_PERMIT_WRITE : 0);
+  // Need to mask out the AUTHEN and ENCRYPT bits
+  sapChar->properties  = (bleChar->properties & BLE_PROPERTIES_MASK);
+  sapChar->permissions = setPermissions(bleChar->properties);
 
   if (bleChar->charDesc)
   {

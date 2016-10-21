@@ -6,7 +6,7 @@ int heartRateMeasurement = 0;
 BLE_Char heartRateChar =
 {
   {0x37, 0x2A}, // UUID for heart rate measurement, 16 bits
-  BLE_READABLE,
+  BLE_AUTHEN | BLE_READABLE,
   "Heart rate measurement"
 };
 
