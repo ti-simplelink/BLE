@@ -10,11 +10,23 @@ void setup() {
   ble.startAdvert();
 }
 
+/* +1 for null-terminator */
+int numBytes = 0;
+char serialData[BLE_SERIAL_BUFFER_SIZE + 1];
+
 void loop() {
   ble.handleEvents();
+  /* Forward Energia serial monitor to BLE serial. */
   if (Serial.available())
   {
-    ble.print(Serial.readString());
+    while ((numBytes = Serial.available()))
+    {
+      Serial.readBytes(serialData, numBytes);
+      serialData[numBytes] = '\0';
+      Serial.print("Sending via serial:");
+      Serial.println(serialData);
+      ble.print(serialData);
+    }
   }
   if (ble.available())
   {
