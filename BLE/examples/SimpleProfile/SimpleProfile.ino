@@ -1,75 +1,196 @@
 
 #include <BLE.h>
 
-char char1Value = 0;
-int char2Value = 0;
-long char3Value = 0;
-String char4Value = String("Hello, world!");
+/* State variables for LED chars */
+uint8_t led1Value = 0;
+uint8_t led2RedValue = 0;
+uint8_t led2GreenValue = 0;
+uint8_t led2BlueValue = 0;
 
-BLE_Char char1 =
+/* State Variables for Button Chars */
+// Buttons are active low so initial state is 1
+uint8_t button1State = 1;
+uint8_t button2State = 1;
+
+/* Pin number variables for LEDs on MSP432P401R LaunchPad */
+uint8_t led1Pin = 78;
+uint8_t led2RedPin = 75;
+uint8_t led2GreenPin = 76;
+uint8_t led2BluePin = 77;
+
+/* Pin number variables for Buttons on MSP432P401R LaunchPad */
+uint8_t button1Pin = 73;
+uint8_t button2Pin = 74;
+
+/* Declare Simple LED Service Characteristics here */
+
+// Char 1 requires authentication, this means you will need to
+// pair with your phone before being able to write/read from it
+BLE_Char led1Char =
 {
-  {0xF1, 0xFF},
-  BLE_READABLE | BLE_WRITABLE,
-  "Characteristic 1"
+  {0xF1, 0xFF},                               /* 16 bit BLE UUID = 0xFFF1 */
+  BLE_AUTHEN | BLE_WRITABLE| BLE_READABLE,    /* BLE Properties           */
+  "LED 1"                                     /* User Description         */
 };
 
-BLE_Char char2 =
+BLE_Char led2RedChar =
 {
   {0xF2, 0xFF},
-  BLE_READABLE,
-  "Characteristic 2"
+  BLE_WRITABLE| BLE_READABLE,
+  "LED 2: Red"
 };
 
-BLE_Char char3 =
+BLE_Char led2GreenChar =
 {
   {0xF3, 0xFF},
-  BLE_WRITABLE,
-  "Characteristic 3"
+  BLE_WRITABLE| BLE_READABLE,
+  "LED 2: Green"
 };
 
-BLE_Char char4 =
+BLE_Char led2BlueChar =
 {
   {0xF4, 0xFF},
-  BLE_NOTIFIABLE,
-  "Characteristic 4"
+  BLE_WRITABLE| BLE_READABLE,
+  "LED 2: Blue"
 };
 
-BLE_Char char5 =
-{
-  {0xF5, 0xFF},
-  BLE_READABLE,
-  "Characteristic 5"
-};
+/* BLE LED Service is made up of LED Chars */
+BLE_Char *simpleLEDServiceChars[] = {&led1Char, &led2RedChar, &led2GreenChar, &led2BlueChar};
 
-BLE_Char *simpleServiceChars[] = {&char1, &char2, &char3, &char4, &char5};
-
-BLE_Service simpleService =
+/* LED Service Declaration */
+BLE_Service simpleLEDService =
 {
   {0xF0, 0xFF},
-  5, simpleServiceChars
+  4, simpleLEDServiceChars
+};
+
+BLE_Char button1Char =
+{
+  {0x01, 0xFF},
+  BLE_NOTIFIABLE,
+  "Button 1 State"
+};
+
+BLE_Char button2Char =
+{
+  {0x02, 0xFF},
+  BLE_NOTIFIABLE,
+  "Button 2 State"
+};
+
+/* BLE LED Service is made up of LED Chars */
+BLE_Char *simpleButtonServiceChars[] = {&button1Char, &button2Char};
+
+/* LED Service Declaration */
+BLE_Service simpleButtonService =
+{
+  {0x00, 0xFF},
+  2, simpleButtonServiceChars
 };
 
 void setup() {
   Serial.begin(115200);
+  ble.setLogLevel(BLE_LOG_ERRORS);
   ble.begin();
-  ble.addService(&simpleService);
-  ble.writeValue(&char1, char1Value);
-  ble.writeValue(&char2, char2Value);
-  ble.writeValue(&char3, char3Value);
-  ble.writeValue(&char4, char4Value);
-  ble.setAdvertName("Simple Profile");
+
+  // Initalize I/O
+  pinMode(led1Pin, OUTPUT);
+  pinMode(led2RedPin, OUTPUT);
+  pinMode(led2GreenPin, OUTPUT);
+  pinMode(led2BluePin, OUTPUT);
+
+  // Note that the switches on the MSP432P401R LP need pullups
+  pinMode(button1Pin, INPUT_PULLUP);
+  pinMode(button2Pin, INPUT_PULLUP);
+
+  button1State = digitalRead(button1Pin);
+  button2State = digitalRead(button2Pin);
+
+  /* Add and intialize LED service */
+  ble.addService(&simpleLEDService);
+  ble.writeValue(&led1Char, led1Value);
+  ble.writeValue(&led2RedChar, led2RedValue);
+  ble.writeValue(&led2GreenChar, led2GreenValue);
+  ble.writeValue(&led2BlueChar, led2BlueValue);
+
+  /* Add and initialize Button Service */
+  ble.addService(&simpleButtonService);
+  ble.writeValue(&button1Char, button1State);
+  ble.writeValue(&button2Char, button2State);
+
+  /* Start Advertising */
+  ble.setAdvertName("BLE I/O Demo");
   ble.startAdvert();
+
+  /* Setup security params */
+  ble.setPairingMode(BLE_SECURITY_WAIT_FOR_REQUEST);
+  ble.setIoCapabilities(BLE_DISPLAY_YES_NO);
+  ble.useBonding(true);
+
+  /* Print a message to the console */
+  Serial.println(" BLE Energia Buttons/LED Demo");
 }
 
 // the loop routine runs over and over again forever as a task.
 void loop() {
   ble.handleEvents();
-  char1Value = ble.readValue_char(&char1);
-  Serial.print("char1Value=");Serial.println(char1Value);
-  char2Value = ble.readValue_int(&char2);
-  Serial.print("char2Value=");Serial.println(char2Value);
-  char3Value = ble.readValue_long(&char3);
-  Serial.print("char3Value=");Serial.println(char3Value);
-  char4Value = ble.readValue_String(&char4);
-  Serial.print("char4Value=");Serial.println(char4Value);
+
+  if(ble.isConnected())
+  {
+    // Read the state of both buttons and send a notification
+    // if either is pressed, note that your app will
+    // need to register for notifications by writing 01:00
+    // to the button char's CCCD
+    uint8_t newButton1State = digitalRead(button1Pin);
+    uint8_t newButton2State = digitalRead(button2Pin);
+
+    if(button1State != newButton1State)
+    {
+      button1State = newButton1State;
+      Serial.print("Button 1 Val Changed=");Serial.println(button1State);
+      ble.writeValue(&button1Char, button1State);
+    }
+
+    if(button2State != newButton2State)
+    {
+      button2State = newButton2State;
+      Serial.print("Button 2 Val Changed=");Serial.println(button2State);
+      ble.writeValue(&button2Char, button2State);
+    }
+
+    // Poll the values of the characteristics in SimpleProfile
+    // Print char value if it changed
+    if(led1Value != ble.readValue_char(&led1Char))
+    {
+      led1Value = ble.readValue_char(&led1Char);
+      Serial.print("LED 1 Val Changed=");Serial.println(led1Value);
+    }
+
+    if(led2RedValue != ble.readValue_char(&led2RedChar))
+    {
+      led2RedValue = ble.readValue_char(&led2RedChar);
+      Serial.print("LED 2 Red Val Changed=");Serial.println(led2RedValue);
+    }
+
+    if(led2GreenValue != ble.readValue_char(&led2GreenChar))
+    {
+      led2GreenValue = ble.readValue_char(&led2GreenChar);
+      Serial.print("LED 2 Green Val Changed=");Serial.println(led2GreenValue);
+    }
+
+    if(led2BlueValue != ble.readValue_char(&led2BlueChar))
+    {
+      led2BlueValue = ble.readValue_char(&led2BlueChar);
+      Serial.print("LED 2 Blue Val Changed=");Serial.println(led2BlueValue);
+    }
+
+    // Set LEDs based on new characteristic values
+    // LED1 can only be on or off, mask out all other bits
+    digitalWrite(led1Pin, (led1Value & 0x01));
+    // Tri color LED can be PWM'd to create different colors
+    // Values between 0-255 are acceptable
+    analogWrite(led2RedPin, led2RedValue);
+    analogWrite(led2GreenPin, led2GreenValue);
+    analogWrite(led2BluePin, led2BlueValue);
+  }
 }

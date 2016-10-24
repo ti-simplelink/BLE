@@ -3,7 +3,7 @@
 
 void setup() {
   Serial.begin(115200);
-  ble.setLogLevel(BLE_LOG_ALL);
+  ble.setLogLevel(BLE_LOG_ERRORS);
   ble.begin();
   ble.serial();
   ble.setAdvertName("Energia Serial");
