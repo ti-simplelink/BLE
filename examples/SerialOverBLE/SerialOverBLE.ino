@@ -81,5 +81,7 @@ void loop() {
     /* All the Serial functions are available with BLE serial. */
     String leData = ble.readString();
     parseSerialString(leData);
+    Serial.print("Received via BLE:");
+    Serial.println(leData);
   }
 }
