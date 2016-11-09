@@ -1,0 +1,129 @@
+#######################################
+# Syntax Coloring Map For BLE Energia
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+BLE                             KEYWORD1
+BLE_Char                        KEYWORD1
+BLE_Service                     KEYWORD1
+BLE_Advert_Settings             KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin                           KEYWORD2
+setLogLevel                     KEYWORD2
+handleEvents                    KEYWORD2
+terminateConn                   KEYWORD2
+end                             KEYWORD2
+isConnected                     KEYWORD2
+isAdvertising                   KEYWORD2
+startAdvert                     KEYWORD2
+stopAdvert                      KEYWORD2
+setAdvertData                   KEYWORD2
+getAdvertData                   KEYWORD2
+setAdvertName                   KEYWORD2
+setAdvertName                   KEYWORD2
+setGattParam                    KEYWORD2
+getGattParam                    KEYWORD2
+setGapParam                     KEYWORD2
+getGapParam                     KEYWORD2
+hciCommand                      KEYWORD2
+setConnParams                   KEYWORD2
+setMinConnInt                   KEYWORD2
+setMaxConnInt                   KEYWORD2
+setRespLatency                  KEYWORD2
+setBleTimeout                   KEYWORD2
+addService                      KEYWORD2
+writeValue                      KEYWORD2
+readValue_bool                  KEYWORD2
+readValue_char                  KEYWORD2
+readValue_uchar                 KEYWORD2
+readValue_int                   KEYWORD2
+readValue_uint                  KEYWORD2
+readValue_long                  KEYWORD2
+readValue_ulong                 KEYWORD2
+readValue_float                 KEYWORD2
+readValue_double                KEYWORD2
+readValue_uint8_t               KEYWORD2
+readValue_charArr               KEYWORD2
+readValue_String                KEYWORD2
+setValueFormat                  KEYWORD2
+setPairingMode                  KEYWORD2
+setIoCapabilities               KEYWORD2
+useBonding                      KEYWORD2
+eraseAllBonds                   KEYWORD2
+replaceLruBond                  KEYWORD2
+sendSecurityRequest             KEYWORD2
+useWhiteListPolicy              KEYWORD2
+getRand                         KEYWORD2
+getRevision                     KEYWORD2
+getStatus                       KEYWORD2
+testCommand                     KEYWORD2
+serial                          KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+BLE_SUCCESS                             LITERAL1
+BLE_FAILURE                             LITERAL1
+BLE_INVALID_PARAMETERS                  LITERAL1
+BLE_ALREADY_ADVERTISING                 LITERAL1
+BLE_NOT_ADVERTISING                     LITERAL1
+BLE_NOT_CONNECTED                       LITERAL1
+BLE_INVALID_HANDLE                      LITERAL1
+BLE_UNDEFINED_VALUE                     LITERAL1
+BLE_NOT_IMPLEMENTED                     LITERAL1
+BLE_TIMEOUT                             LITERAL1
+BLE_CHECK_ERROR                         LITERAL1
+BLE_LOG_NONE                            LITERAL1
+BLE_LOG_ERRORS                          LITERAL1
+BLE_LOG_RPCS                            LITERAL1
+BLE_LOG_REC_MSGS                        LITERAL1
+BLE_LOG_MSGS                            LITERAL1
+BLE_LOG_CHARACTERISTICS                 LITERAL1
+BLE_LOG_ALL                             LITERAL1
+BLE_PORT_LOCAL                          LITERAL1
+BLE_PORT_UART                           LITERAL1
+BLE_PORT_SPI                            LITERAL1
+BLE_ADV_DATA_NOTCONN                    LITERAL1
+BLE_ADV_DATA_CONN                       LITERAL1
+BLE_ADV_DATA_SCANRSP                    LITERAL1
+MAX_ADVERT_IDX                          LITERAL1
+BLE_ADV_MODE_NONCONN                    LITERAL1
+BLE_ADV_MODE_CONN                       LITERAL1
+BLE_ADV_MODE_SCANNABLE                  LITERAL1
+BLE_ADV_STOP_ON_CONN                    LITERAL1
+BLE_ADV_RESTART_ON_CONN_EST             LITERAL1
+BLE_ADV_RESTART_ON_CONN_TERM            LITERAL1
+BLE_READABLE                            LITERAL1
+BLE_WRITABLE_NORSP                      LITERAL1
+BLE_WRITABLE                            LITERAL1
+BLE_NOTIFIABLE                          LITERAL1
+BLE_INDICATABLE                         LITERAL1
+BLE_AUTHEN                              LITERAL1
+BLE_ENCRYPT                             LITERAL1
+BLE_PROPERTIES_MASK                     LITERAL1
+BLE_SERIAL_BUFFER_SIZE                  LITERAL1
+BLE_SECURITY_NONE                       LITERAL1
+BLE_SECURITY_WAIT_FOR_REQUEST           LITERAL1
+BLE_SECURITY_INITIATE_UPON_CONNECTION   LITERAL1
+BLE_DISPLAY_ONLY                        LITERAL1
+BLE_DISPLAY_YES_NO                      LITERAL1
+BLE_KEYBOARD_ONLY                       LITERAL1
+BLE_NO_INPUT_NO_OUTPUT                  LITERAL1
+BLE_KEYBOARD_DISPLAY                    LITERAL1
+BLE_SECURITY_STATE_COMPLETE             LITERAL1
+BLE_SECURITY_STATE_BONDED               LITERAL1
+BLE_SECURITY_STATE_BOND_SAVED           LITERAL1
+BLE_DEF_DESIRED_MIN_CONN_INT            LITERAL1
+BLE_DEF_DESIRED_MAX_CONN_INT            LITERAL1
+TI_COMPANY_ID                           LITERAL1
+TI_ST_DEVICE_ID                         LITERAL1
+TI_ST_KEY_DATA_ID                       LITERAL1
+
