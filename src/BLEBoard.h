@@ -13,7 +13,8 @@
 #ifdef Board_WIFI
 #undef Board_WIFI
 #endif //Board_WIFI
-#include "variants/MSP_EXP432P401R/Board.h"
+//#include "variants/MSP_EXP432P401R/Board.h"
+#include "Board.h"
 
 /* Pin numbers used by Energia pin functions and in the GPIO tables. */
 #define PIN2_5             19
@@ -29,7 +30,7 @@
 /* Pin used to switch the CC2650 into its bootloader for SBL. */
 #define BLE_SBL_BL_PIN     PIN6_0
 
-#define BLE_UART_ID        Board_UARTA2 // =1, USB Serial is Board_UARTA0=0
+#define BLE_UART_ID        Serial1 // Board_UARTA2 // =1, USB Serial is Board_UARTA0=0
 #endif //__MSP432P401R__
 
 /* Performs all necessary board initialization in ble.begin(). */
